@@ -14,7 +14,7 @@ namespace :overlay do
     app = "#{NpmOverapp.project_root_dir}/test_overlay_app"
     ec "rm -rf #{app}" if FileTest.exist?(app)
     ec "mkdir #{app}"
-    ec "overapp #{NpmOverapp.project_root_dir}/test_overlay #{root}/test_overlay_app"
+    ec "overapp #{NpmOverapp.project_root_dir}/test_overlay #{NpmOverapp.project_root_dir}/test_overlay_app"
     raise 'bad' unless $?.success?
     Dir.chdir(app) do
       ec "npm install"
