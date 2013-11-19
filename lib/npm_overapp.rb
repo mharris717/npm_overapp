@@ -1,5 +1,11 @@
+require 'mharris_ext'
+require 'rake'
+
 module NpmOverapp
   class << self
+    attr_accessor :server_base_overlay
+    fattr(:server_port) { 5901 }
+
     def project_root_dir
       File.expand_path(".")
     end
@@ -16,5 +22,9 @@ module NpmOverapp
   end
 end
 
-require 'rake'
+def overapp
+  locals = ["/code/orig/overapp/bin/overapp"]
+  locals.find { |x| FileTest.exist?(x) } || "overapp"
+end
+
 NpmOverapp.load_files!

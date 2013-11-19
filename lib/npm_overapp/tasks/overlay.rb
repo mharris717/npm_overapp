@@ -14,7 +14,7 @@ namespace :overlay do
     app = "#{NpmOverapp.project_root_dir}/test_overlay_app"
     ec "rm -rf #{app}" if FileTest.exist?(app)
     ec "mkdir #{app}"
-    ec "overapp #{NpmOverapp.project_root_dir}/test_overlay #{NpmOverapp.project_root_dir}/test_overlay_app"
+    ec "#{overapp} #{NpmOverapp.project_root_dir}/test_overlay #{NpmOverapp.project_root_dir}/test_overlay_app"
     raise 'bad' unless $?.success?
     Dir.chdir(app) do
       ec "npm install"
@@ -57,6 +57,10 @@ namespace :overlay do
     run_test
   end
 
+  task :test_inner do
+    run_test
+  end
+
   task :test_both => [:build] do
     run_test
     set_overlay_mode "server"
@@ -69,6 +73,10 @@ namespace :overlay do
     body = File.read(file)
     body = body.gsub "testingMode(\"#{other}\")","testingMode(\"#{mode}\")"
     File.create file, body
+  end
+
+  task :server_mode do
+    set_overlay_mode('server')
   end
 
   task :make_server_mode do

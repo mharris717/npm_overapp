@@ -1,56 +1,39 @@
 namespace :test_server do
-  def overapp
-    locals = ["/code/orig/overapp/bin/overapp"]
-    locals.find { |x| FileTest.exist?(x) } || "overapp"
+  def test_server_dir
+    "#{NpmOverapp.project_root_dir}/test_server"
   end
 
-  def test_server_dir
-    File.expand_path(File.dirname(__FILE__) + "/../test_server")
+  def mkdir_fresh(dir)
+    ec "rm -rf #{dir}" if FileTest.exist?(dir)
+    ec "mkdir #{dir}"
   end
 
   task :build do
-    ec "rm -rf #{test_server_dir}" if FileTest.exist?(test_server_dir)
-    ec "mkdir #{test_server_dir}"
-    ec "#{overapp} https://github.com/mharris717/ember_auth_rails_overlay.git #{test_server_dir}"
-  end
-
-  task :db do
-    ec "cd #{test_server_dir} && bundle install && rake ember_auth_rails_engine:install:migrations && rake db:migrate db:seed"
-  end
-
-  task :setup => [:build,:db]
-
-  def pid_status(desc)
-    res = [desc]
-    res << "This: #{Process.pid}"
-    res << "Forked: #{$forked_pid}"
-    res += server_ps_lines
-    str = res.join("\n")
-    puts str
-    File.append "pids.txt",str+"\n\n"
+    mkdir_fresh(test_server_dir)
+    ec "#{overapp} #{NpmOverapp.server_base_overlay} #{test_server_dir}"
   end
 
   def server_ps_lines
-    `ps -ax | grep #{port}`.split("\n").reject { |x| x =~ /grep/ }
+    `ps -ax | grep #{NpmOverapp.server_port}`.split("\n").reject { |x| x =~ /grep/ }
   end
 
   def server_pids
     server_ps_lines.map { |x| x.split(/\s/).first }
   end
 
-  def port
-    5901
+  def start
+    ec "cd #{test_server_dir} && rails server -p #{NpmOverapp.server_port}"
+  end
+
+  task :start do
+    start
   end
 
   task :start_in_background do
     fork do
-      ec "cd #{test_server_dir} && rails server -p #{port}"
+      start
     end
     sleep(5)
-  end
-
-  task :start do
-    ec "cd #{test_server_dir} && rails server -p #{port}"
   end
 
   def kill_strays
