@@ -3,7 +3,7 @@ require 'rake'
 
 module NpmOverapp
   class << self
-    attr_accessor :server_base_overlay
+    attr_accessor :server_base_overlay, :app_name
     fattr(:server_port) { 5901 }
 
     def project_root_dir

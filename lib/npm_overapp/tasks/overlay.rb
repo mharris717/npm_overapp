@@ -26,11 +26,8 @@ namespace :overlay do
     res = {}
     dir = "#{NpmOverapp.project_root_dir}/test_overlay_app"
     
-    res["#{dir}/vendor/ember-auth-easy/index.js"] = 
-    "/code/orig/ember_npm_projects/ember-auth-easy/dist/ember-auth-easy.js"
-
-    #res["#{dir}/vendor/ember-auth/dist/ember-auth.js"] = 
-    #{}"/code/orig/ember-auth/dist/ember-auth.js"
+    res["#{dir}/vendor/#{NpmOverapp.app_name}/index.js"] = 
+    "/code/orig/ember_npm_projects/#{NpmOverapp.app_name}/dist/#{NpmOverapp.app_name}.js"
 
     res.each do |target,source|
       `rm #{target}`
@@ -39,8 +36,8 @@ namespace :overlay do
   end
 
   task :copy_dist => [:dist] do
-    source = "#{NpmOverapp.project_root_dir}/dist/ember-auth-easy.js"
-    target = "#{NpmOverapp.project_root_dir}/test_overlay_app/vendor/ember-auth-easy/index.js"
+    source = "#{NpmOverapp.project_root_dir}/dist/#{NpmOverapp.app_name}.js"
+    target = "#{NpmOverapp.project_root_dir}/test_overlay_app/vendor/#{NpmOverapp.app_name}/index.js"
 
     ec "rm #{target}"
     ec "cp #{source} #{target}"
